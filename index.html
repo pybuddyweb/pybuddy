@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --bg-card: #1e1e1e;
+      --text-primary: #e0e0e0;
+      --text-secondary: #cbc4c4;
+      --accent: #4caf50;
+      --accent-hover: #66bb6a;
+      --transition: 0.3s;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Roboto', sans-serif; background: var(--bg-dark); color: var(--text-primary); }
+    header { background: var(--bg-card); padding: 1rem; text-align: center; font-size: 1.5rem; font-weight: 500; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    nav { display: flex; justify-content: space-around; background: var(--bg-card); padding: 0.5rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    nav button { background: none; border: none; color: var(--text-secondary); font-size: 1rem; font-weight: 500; cursor: pointer; padding: 0.5rem 1rem; transition: color var(--transition); }
+    nav button.active, nav button:hover { color: var(--accent); }
+    .screen { display: none; padding: 2rem; }
+    .screen.active { display: block; }
+    h2 { margin-bottom: 1rem; color: var(--accent); }
+    h3 { color: var(--accent); margin-bottom: 0.5rem; }
+    h4 { color: var(--text-secondary); margin: 1rem 0 0.5rem; font-size: 1.1rem; }
+    p { margin-bottom: 0.5rem; }
+    ul { margin-left: 1.2rem; margin-bottom: 1rem; }
+    .card { background: var(--bg-card); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: transform var(--transition), box-shadow var(--transition); }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 4px 8px rgba(0,0,0,0.7); }
+    .lesson-topic { cursor: pointer; margin-bottom: 0.5rem; color: var(--accent); text-decoration: underline; }
+    .options button { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 6px; padding: 0.75rem; color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: background var(--transition), transform var(--transition); margin: 0.25rem; }
+    .options button:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .chatbox { margin-bottom: 1rem; display: flex; }
+    input, button.send-btn { padding: 0.75rem; border-radius: 6px; border: none; font-size: 1rem; }
+    input { flex: 1; margin-right: 0.5rem; background: var(--bg-card); color: var(--text-primary); }
+    button.send-btn { background: var(--accent); color: #000; cursor: pointer; transition: background var(--transition); }
+    button.send-btn:hover { background: var(--accent-hover); }
+    .chat-history { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; background: var(--bg-card); padding: 1rem; border-radius: 6px; }
+    .chat-history p { margin-bottom: 0.5rem; }
+    iframe { width: 100%; height: 300px; border: none; border-radius: 8px; margin-top: 1rem; }
+    .intro-text { line-height: 1.6; }
+    .code-block { background: #2d2d2d; padding: 0.75rem; border-radius: 6px; font-family: monospace; margin: 0.5rem 0; overflow-x: auto; }
+    .crossword-grid { display: grid; grid-template-columns: repeat(5, 40px); gap: 2px; margin-bottom: 1rem; }
+    .crossword-cell { width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--text-secondary); text-align: center; font-size: 1.2rem; line-height: 40px; }
+    .crossword-cell input { width: 100%; height: 100%; text-align: center; text-transform: uppercase; background: transparent; color: var(--text-primary); border: none; }
+    .crossword-clues { margin-bottom: 1rem; }
+    .error-code { white-space: pre-wrap; }
+    .draggable { cursor: move; user-select: none; }
+    .draggable.dragging { opacity: 0.5; }
+    .code-completion-input { width: 100%; padding: 0.5rem; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--text-secondary); border-radius: 4px; }
+  </style>
+</head>
+<body>
+<header>🐍 Welcome To PyBuddy </header>
+<nav>
+  <button class="tab active" data-tab="home">🏠 Home</button>
+  <button class="tab" data-tab="learn">📘 Learn</button>
+  <button class="tab" data-tab="game">🎮 Game</button>
+  <button class="tab" data-tab="chatbot">🤖 Chatbot</button>
+</nav>
+
+<!-- Home Section -->
+<div id="home" class="screen active">
+  <h2>Welcome to PyBuddy Junior</h2>
+  <div class="card intro-text">
+    <h3>Introduction to Python Programming</h3>
+    <p>Welcome to PyBuddy Junior, your ultimate companion for learning Python programming in a fun and interactive way! Python is one of the most popular programming languages in the world, known for its simplicity and versatility. Whether you're a complete beginner or looking to refresh your skills, PyBuddy Junior is here to guide you through your coding journey.</p>
+    <p>Python is an excellent first programming language because its syntax (the way you write code) is clear and easy to understand. It's used by major companies like Google, NASA, YouTube, and Instagram for everything from web development to scientific computing. With PyBuddy Junior, you'll learn not just how to write code, but how to think like a programmer.</p>
+    <h3>Why Learn Python?</h3>
+    <p>Python is everywhere! Here's why you should learn it:</p>
+    <ul>
+      <li><strong>Easy to Learn:</strong> Python reads almost like English, making it perfect for beginners</li>
+      <li><strong>Versatile:</strong> You can build websites, games, data analysis tools, and even artificial intelligence</li>
+      <li><strong>In-Demand Skill:</strong> Python developers are among the highest-paid in the tech industry</li>
+      <li><strong>Large Community:</strong> Millions of Python programmers can help when you get stuck</li>
+      <li><strong>Fun Projects:</strong> Create games, automate tasks, analyze data, and more!</li>
+    </ul>
+    <h3>What You'll Learn with PyBuddy Junior</h3>
+    <p>Our interactive platform will guide you through all the essential Python concepts:</p>
+    <ul>
+      <li><strong>Basic Syntax:</strong> Learn how to write proper Python code</li>
+      <li><strong>Variables & Data Types:</strong> Store and work with different kinds of information</li>
+      <li><strong>Control Flow:</strong> Make decisions in your code with conditions</li>
+      <li><strong>Loops:</strong> Repeat actions efficiently</li>
+      <li><strong>Functions:</strong> Create reusable blocks of code</li>
+      <li><strong>Data Structures:</strong> Organize data with lists, dictionaries, and more</li>
+      <li><strong>File Handling:</strong> Read and write files</li>
+      <li><strong>Error Handling:</strong> Make your programs more robust</li>
+    </ul>
+    <h3>How to Use PyBuddy Junior</h3>
+    <p>Our platform offers multiple ways to learn:</p>
+    <ul>
+      <li><strong>Learn Section:</strong> Interactive lessons with explanations and videos</li>
+      <li><strong>Game Section:</strong> Test your knowledge with quizzes and puzzles</li>
+      <li><strong>Chatbot:</strong> Get instant help with your Python questions</li>
+    </ul>
+    <p>Python programming is an incredibly valuable skill in today's digital world. Whether you want to build games, analyze data, create websites, or automate boring tasks, Python can help you do it. PyBuddy Junior makes learning Python fun and engaging with interactive lessons, hands-on exercises, and immediate feedback.</p>
+    <p>Ready to start your Python journey? Click on the "Learn" tab to begin with our first lesson, or try the "Game" section to test your knowledge. If you have any questions along the way, our friendly chatbot is always available to help!</p>
+  </div>
+</div>
+
+<!-- Learn Section -->
+<div id="learn" class="screen">
+  <h2>Learn Python Topics</h2>
+  <div>
+    <h4>Core Python Concepts</h4>
+    <div class="lesson-topic" onclick="showLesson('variables')">1. Variables and Data Types</div>
+    <div class="lesson-topic" onclick="showLesson('operators')">2. Operators and Expressions</div>
+    <div class="lesson-topic" onclick="showLesson('conditionals')">3. Conditional Statements (if, elif, else)</div>
+    <div class="lesson-topic" onclick="showLesson('loops')">4. Loops (for, while)</div>
+    <div class="lesson-topic" onclick="showLesson('functions')">5. Functions and Arguments</div>
+    <div class="lesson-topic" onclick="showLesson('lambdas')">6. Lambda Functions</div>
+    <div class="lesson-topic" onclick="showLesson('scope')">7. Scope and Namespace</div>
+    <div class="lesson-topic" onclick="showLesson('lists_tuples_sets')">8. Lists, Tuples, and Sets</div>
+    <div class="lesson-topic" onclick="showLesson('dictionaries')">9. Dictionaries</div>
+    <div class="lesson-topic" onclick="showLesson('comprehensions')">10. List Comprehensions and Generator Expressions</div>
+    <h4>Object-Oriented Programming (OOP)</h4>
+    <div class="lesson-topic" onclick="showLesson('classes')">11. Classes and Objects</div>
+    <div class="lesson-topic" onclick="showLesson('constructors')">12. Constructors and Destructors</div>
+    <div class="lesson-topic" onclick="showLesson('inheritance')">13. Inheritance and Polymorphism</div>
+    <div class="lesson-topic" onclick="showLesson('encapsulation')">14. Encapsulation and Abstraction</div>
+    <div class="lesson-topic" onclick="showLesson('dunder')">15. Magic (Dunder) Methods</div>
+    <h4>Error Handling</h4>
+    <div class="lesson-topic" onclick="showLesson('exceptions')">16. Exception Handling (try, except)</div>
+    <div class="lesson-topic" onclick="showLesson('custom_exceptions')">17. Custom Exceptions</div>
+    <div class="lesson-topic" onclick="showLesson('assertions')">18. Assertions</div>
+    <h4>File and System Operations</h4>
+    <div class="lesson-topic" onclick="showLesson('files')">19. Reading and Writing Files</div>
+    <div class="lesson-topic" onclick="showLesson('directories')">20. Working with Directories (os, pathlib)</div>
+    <div class="lesson-topic" onclick="showLesson('virtual_env')">21. Virtual Environments & pip</div>
+    <div class="lesson-topic" onclick="showLesson('compression')">22. File Compression and Archiving</div>
+    <h4>Standard Libraries & Built-in Modules</h4>
+    <div class="lesson-topic" onclick="showLesson('datetime')">23. datetime and time</div>
+    <div class="lesson-topic" onclick="showLesson('math_stats')">24. math and statistics</div>
+    <div class="lesson-topic" onclick="showLesson('random_secrets')">25. random and secrets</div>
+    <div class="lesson-topic" onclick="showLesson('regex')">26. re (Regular Expressions)</div>
+    <div class="lesson-topic" onclick="showLesson('collections')">27. collections module</div>
+    <div class="lesson-topic" onclick="showLesson('itertools_functools')">28. itertools and functools</div>
+    <h4>Advanced Concepts</h4>
+    <div class="lesson-topic" onclick="showLesson('decorators')">29. Decorators</div>
+    <div class="lesson-topic" onclick="showLesson('iterators_generators')">30. Iterators and Generators</div>
+    <div class="lesson-topic" onclick="showLesson('context_managers')">31. Context Managers (with statement)</div>
+    <div class="lesson-topic" onclick="showLesson('multithreading')">32. Multithreading</div>
+    <div class="lesson-topic" onclick="showLesson('multiprocessing')">33. Multiprocessing</div>
+    <div class="lesson-topic" onclick="showLesson('memory_management')">34. Memory Management & Garbage Collection</div>
+    <h4>Web & Network Programming</h4>
+    <div class="lesson-topic" onclick="showLesson('json')">35. Working with JSON</div>
+    <div class="lesson-topic" onclick="showLesson('apis')">36. Consuming APIs using requests</div>
+    <div class="lesson-topic" onclick="showLesson('web_scraping')">37. Web Scraping (BeautifulSoup, Scrapy)</div>
+    <div class="lesson-topic" onclick="showLesson('socket')">38. Socket Programming</div>
+    <h4>Database & Data Handling</h4>
+    <div class="lesson-topic" onclick="showLesson('databases')">39. Connecting to Databases (SQLite, MySQL)</div>
+    <div class="lesson-topic" onclick="showLesson('orm')">40. ORM with SQLAlchemy</div>
+    <div class="lesson-topic" onclick="showLesson('csv_excel')">41. CSV and Excel File Handling (pandas, openpyxl)</div>
+    <h4>Testing, Debugging & Optimization</h4>
+    <div class="lesson-topic" onclick="showLesson('testing')">42. Unit Testing with unittest or pytest</div>
+    <div class="lesson-topic" onclick="showLesson('debugging')">43. Debugging with pdb</div>
+    <div class="lesson-topic" onclick="showLesson('logging')">44. Logging</div>
+    <div class="lesson-topic" onclick="showLesson('profiling')">45. Code Profiling and Optimization</div>
+  </div>
+  <div class="card" id="lesson-content" style="display:none;">
+    <h3 id="lesson-title"></h3>
+    <p id="lesson-notes"></p>
+    <iframe id="lesson-video" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- Game Section -->
+<div id="game" class="screen">
+  <h2>Quiz & Puzzles</h2>
+  <div class="card">
+    <h3>Score Board</h3>
+    <p>Total Score: <span id="total-score">0</span></p>
+  </div>
+  <div class="card">
+    <h3 id="quiz-question">Loading Quiz...</h3>
+    <div id="quiz-options" class="options"></div>
+    <p id="quiz-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="fill-in-blank-question">Loading Fill-in-the-Blank...</h3>
+    <div id="fill-in-blank-options" class="options"></div>
+    <p id="fill-in-blank-answer" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="code-order-question">Loading Code Ordering Puzzle...</h3>
+    <div id="code-order-options" class="options"></div>
+    <p id="code-order-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="crossword-question">Python Crossword</h3>
+    <div id="crossword-grid" class="crossword-grid"></div>
+    <div id="crossword-clues" class="crossword-clues">
+      <p><strong>Across:</strong> 1. Keyword for defining a function (3 letters)</p>
+      <p><strong>Down:</strong> 1. Data structure for key-value pairs (4 letters)</p>
+    </div>
+    <button class="send-btn" onclick="checkCrossword()">Check Crossword</button>
+    <p id="crossword-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="syntax-error-question">Fix the Syntax Error</h3>
+    <div id="syntax-error-code" class="code-block error-code"></div>
+    <div id="syntax-error-options" class="options"></div>
+    <p id="syntax-error-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="logic-error-question">Fix the Logic Error</h3>
+    <div id="logic-error-code" class="code-block error-code"></div>
+    <div id="logic-error-options" class="options"></div>
+    <p id="logic-error-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="output-guess-question">Guess the Output</h3>
+    <div id="output-guess-code" class="code-block"></div>
+    <div id="output-guess-options" class="options"></div>
+    <p id="output-guess-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="memory-match-question">Python Memory Match</h3>
+    <div id="memory-match-grid" class="options" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;"></div>
+    <p id="memory-match-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+  <div class="card">
+    <h3 id="code-completion-question">Code Completion</h3>
+    <div id="code-completion-code" class="code-block"></div>
+    <input type="text" id="code-completion-input" class="code-completion-input" placeholder="Enter the missing code...">
+    <button class="send-btn" onclick="checkCodeCompletion()">Check Answer</button>
+    <p id="code-completion-result" style="margin-top:1rem; font-weight:bold;"></p>
+  </div>
+</div>
+
+<!-- Chatbot Section -->
+<div id="chatbot" class="screen">
+  <h2>Ask PyBuddy</h2>
+  <div class="chat-history" id="chat-history"></div>
+  <div class="chatbox">
+    <input type="text" id="user-input" placeholder="Ask a Python question..." onkeypress="handleKeyPress(event)">
+    <button class="send-btn" onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+// Scoring system
+let scores = JSON.parse(localStorage.getItem('pyBuddyScores')) || {
+  quiz: 0,
+  fillInBlank: 0,
+  codeOrder: 0,
+  crossword: 0,
+  syntaxError: 0,
+  logicError: 0,
+  outputGuess: 0,
+  memoryMatch: 0,
+  codeCompletion: 0
+};
+
+function updateScore(game, points) {
+  scores[game] += points;
+  localStorage.setItem('pyBuddyScores', JSON.stringify(scores));
+  updateScoreBoard();
+}
+
+function getTotalScore() {
+  return Object.values(scores).reduce((sum, score) => sum + score, 0);
+}
+
+function updateScoreBoard() {
+  document.getElementById('total-score').innerText = getTotalScore();
+}
+
+// Tab navigation
+const tabs = document.querySelectorAll('.tab');
+const screens = document.querySelectorAll('.screen');
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    screens.forEach(screen => screen.classList.remove('active'));
+    document.getElementById(tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'game') {
+      updateScoreBoard();
+    }
+  });
+});
+
+// Learn topics and AI videos
+const lessons = {
+  variables: {
+    title: "1. Variables and Data Types",
+    notes: "Variables are containers for storing data values. In Python, you don't need to declare variables before using them. Python has various data types: integers (whole numbers), floats (decimal numbers), strings (text), and booleans (True/False).\n\nExample:\nx = 5  # integer\ny = 3.14  # float\nname = 'Python'  # string\nis_cool = True  # boolean",
+    video: "https://example.com/ai-video/variables"
+  },
+  operators: {
+    title: "2. Operators and Expressions",
+    notes: "Operators are used to perform operations on variables and values. Python has arithmetic operators (+, -, *, /, %), comparison operators (==, !=, >, <), logical operators (and, or, not), and assignment operators (=, +=, -=).\n\nExample:\na = 10 + 5  # addition\nb = 10 == 5  # comparison (False)\nc = True and False  # logical (False)",
+    video: "https://example.com/ai-video/operators"
+  },
+  strings: {
+    title: "3. Strings",
+    notes: "Strings are sequences of characters used to store text. You can create them with single or double quotes. Python provides many string methods like upper(), lower(), split(), replace(), etc.\n\nExample:\ngreeting = 'Hello World'\nprint(greeting.upper())  # HELLO WORLD\nprint(len(greeting))  # 11\nprint(greeting[0:5])  # Hello",
+    video: "https://example.com/ai-video/strings"
+  },
+  lists: {
+    title: "4. Lists",
+    notes: "Lists are ordered, mutable collections of items. They can contain items of different types and are created using square brackets []. You can add, remove, or change items.\n\nExample:\nfruits = ['apple', 'banana', 'cherry']\nfruits.append('orange')  # add item\nfruits[1] = 'blueberry'  # change item\nprint(fruits[0:2])  # ['apple', 'blueberry']",
+    video: "https://example.com/ai-video/lists"
+  },
+  tuples: {
+    title: "5. Tuples",
+    notes: "Tuples are like lists but immutable (cannot be changed after creation). They're created with parentheses (). Useful for fixed data that shouldn't change.\n\nExample:\ncolors = ('red', 'green', 'blue')\nprint(colors[1])  # green\n# colors[1] = 'yellow' would cause an error",
+    video: "https://example.com/ai-video/tuples"
+  },
+  dictionaries: {
+    title: "6. Dictionaries",
+    notes: "Dictionaries store key-value pairs in curly braces {}. They're unordered, changeable, and don't allow duplicate keys.\n\nExample:\nperson = {'name': 'John', 'age': 30}\nprint(person['name'])  # John\nperson['city'] = 'New York'  # add new key-value\nprint(person.keys())  # dict_keys(['name', 'age', 'city'])",
+    video: "https://example.com/ai-video/dictionaries"
+  },
+  sets: {
+    title: "7. Sets",
+    notes: "Sets are unordered collections of unique items. Useful for membership testing and eliminating duplicates.\n\nExample:\nnumbers = {1, 2, 3, 3, 4}\nprint(numbers)  # {1, 2, 3, 4}\nnumbers.add(5)\nnumbers.remove(2)",
+    video: "https://example.com/ai-video/sets"
+  },
+  ifelse: {
+    title: "8. If-Else Conditions",
+    notes: "Use if-elif-else statements to execute code based on conditions. Conditions evaluate to True or False.\n\nExample:\nage = 18\nif age < 13:\n    print('Child')\nelif age < 20:\n    print('Teenager')\nelse:\n    print('Adult')",
+    video: "https://example.com/ai-video/ifelse"
+  },
+  loops: {
+    title: "9. Loops (for & while)",
+    notes: "Loops repeat code blocks. 'for' loops iterate over sequences, 'while' loops run while a condition is true.\n\nExample:\n# For loop\nfor i in range(5):\n    print(i)\n\n# While loop\ncount = 0\nwhile count < 5:\n    print(count)\n    count += 1",
+    video: "https://example.com/ai-video/loops"
+  },
+  functions: {
+    title: "10. Functions",
+    notes: "Functions are reusable blocks of code defined with 'def'. They can take parameters and return values.\n\nExample:\ndef greet(name):\n    return f'Hello, {name}!'\n\nmessage = greet('Alice')\nprint(message)  # Hello, Alice!",
+    video: "https://example.com/ai-video/functions"
+  },
+  modules: {
+    title: "11. Modules & Importing",
+    notes: "Modules are Python files containing reusable code. Use 'import' to access their contents.\n\nExample:\nimport math\nprint(math.sqrt(16))  # 4.0\n\nfrom datetime import date\ntoday = date.today()\nprint(today)",
+    video: "https://example.com/ai-video/modules"
+  },
+  files: {
+    title: "12. File Handling",
+    notes: "Python can read and write files using open(). Always close files or use 'with' statement.\n\nExample:\n# Writing to a file\nwith open('example.txt', 'w') as f:\n    f.write('Hello file!')\n\n# Reading from a file\nwith open('example.txt', 'r') as f:\n    content = f.read()\nprint(content)",
+    video: "https://example.com/ai-video/files"
+  },
+  exceptions: {
+    title: "13. Exception Handling",
+    notes: "Use try-except blocks to handle errors gracefully and prevent program crashes.\n\nExample:\ntry:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print('Cannot divide by zero!')\nelse:\n    print(result)\nfinally:\n    print('This always runs')",
+    video: "https://example.com/ai-video/exceptions"
+  },
+  classes: {
+    title: "14. Classes & Objects",
+    notes: "Classes are blueprints for creating objects with attributes and methods.\n\nExample:\nclass Dog:\n    def __init__(self, name):\n        self.name = name\n    \n    def bark(self):\n        print('Woof!')\n\nmy_dog = Dog('Rex')\nmy_dog.bark()",
+    video: "https://example.com/ai-video/classes"
+  },
+  inheritance: {
+    title: "15. Inheritance",
+    notes: "Inheritance allows a class to inherit attributes and methods from another class.\n\nExample:\nclass Animal:\n    def speak(self):\n        pass\n\nclass Dog(Animal):\n    def speak(self):\n        print('Woof!')\n\nmy_dog = Dog()\nmy_dog.speak()",
+    video: "https://example.com/ai-video/inheritance"
+  },
+  decorators: {
+    title: "16. Decorators",
+    notes: "Decorators modify the behavior of functions without changing their code.\n\nExample:\ndef my_decorator(func):\n    def wrapper():\n        print('Before function')\n        func()\n        print('After function')\n    return wrapper\n\n@my_decorator\ndef say_hello():\n    print('Hello!')\n\nsay_hello()",
+    video: "https://example.com/ai-video/decorators"
+  },
+  generators: {
+    title: "17. Generators",
+    notes: "Generators are functions that yield values one at a time, memory-efficient for large datasets.\n\nExample:\ndef count_up_to(max):\n    count = 1\n    while count <= max:\n        yield count\n        count += 1\n\ncounter = count_up_to(5)\nfor num in counter:\n    print(num)",
+    video: "https://example.com/ai-video/generators"
+  },
+  lambdas: {
+    title: "18. Lambda Functions",
+    notes: "Lambda functions are small anonymous functions defined with the lambda keyword.\n\nExample:\ndouble = lambda x: x * 2\nprint(double(5))  # 10\n\n# Used with map()\nnumbers = [1, 2, 3]\nsquared = list(map(lambda x: x**2, numbers))\nprint(squared)  # [1, 4, 9]",
+    video: "https://example.com/ai-video/lambdas"
+  },
+  comprehensions: {
+    title: "19. List Comprehensions",
+    notes: "Concise way to create lists based on existing lists or other iterables.\n\nExample:\nnumbers = [1, 2, 3, 4]\nsquares = [x**2 for x in numbers]\nprint(squares)  # [1, 4, 9, 16]\n\neven_squares = [x**2 for x in numbers if x % 2 == 0]\nprint(even_squares)  # [4, 16]",
+    video: "https://example.com/ai-video/comprehensions"
+  },
+  datetime: {
+    title: "20. Date & Time",
+    notes: "Python's datetime module helps work with dates and times.\n\nExample:\nfrom datetime import datetime, timedelta\n\nnow = datetime.now()\nprint(now.strftime('%Y-%m-%d %H:%M:%S'))\n\ntomorrow = now + timedelta(days=1)\nprint(tomorrow.date())",
+    video: "https://example.com/ai-video/datetime"
+  }
+};
+
+function showLesson(key) {
+  const lesson = lessons[key];
+  document.getElementById('lesson-title').innerText = lesson.title;
+  document.getElementById('lesson-notes').innerText = lesson.notes;
+  document.getElementById('lesson-video').src = lesson.video;
+  document.getElementById('lesson-content').style.display = 'block';
+}
+
+// Quiz logic
+const quizData = [
+  { question: "What is the output of print(2 + 2)?", options: ["2", "4", "5", "None"], correct: "4" },
+  { question: "Which keyword defines a function?", options: ["def", "function", "fun", "define"], correct: "def" },
+  { question: "How do you create a list?", options: ["{}", "[]", "()", "<>"], correct: "[]" },
+  { question: "Which loop runs while a condition is true?", options: ["for", "while", "repeat", "loop"], correct: "while" },
+  { question: "What does 'elif' mean?", options: ["Else if", "End if", "Else for", "End loop"], correct: "Else if" }
+];
+let currentQuestion = 0;
+function loadQuiz() {
+  const q = quizData[currentQuestion];
+  document.getElementById('quiz-question').innerText = q.question;
+  const optDiv = document.getElementById('quiz-options');
+  optDiv.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => checkAnswer(opt);
+    optDiv.appendChild(btn);
+  });
+}
+function checkAnswer(selected) {
+  const q = quizData[currentQuestion];
+  const result = selected === q.correct ? "Correct!" : `Wrong! Correct: ${q.correct}`;
+  document.getElementById('quiz-result').innerText = result;
+  if (selected === q.correct) updateScore('quiz', 10);
+  currentQuestion = (currentQuestion + 1) % quizData.length;
+  setTimeout(() => {
+    document.getElementById('quiz-result').innerText = '';
+    loadQuiz();
+  }, 2000);
+}
+loadQuiz();
+
+// Fill-in-the-blank puzzle logic
+const fillPuzzles = [
+  { question: "Python is a __ language.", options: ["high-level", "low-level", "assembly"], answer: "high-level" },
+  { question: "The function to display output is __.", options: ["print()", "echo()", "display()"], answer: "print()" },
+  { question: "The __ statement is used to handle exceptions.", options: ["try", "catch", "handle"], answer: "try" },
+  { question: "A __ is an unordered collection with no duplicates.", options: ["set", "list", "tuple"], answer: "set" },
+  { question: "The __ method is called when an object is created.", options: ["__init__", "__new__", "__create__"], answer: "__init__" }
+];
+let fillIndex = 0;
+function loadFillPuzzle() {
+  const p = fillPuzzles[fillIndex];
+  document.getElementById('fill-in-blank-question').innerText = p.question;
+  const optDiv = document.getElementById('fill-in-blank-options');
+  optDiv.innerHTML = '';
+  p.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => checkFill(opt);
+    optDiv.appendChild(btn);
+  });
+}
+function checkFill(selected) {
+  const p = fillPuzzles[fillIndex];
+  const result = selected === p.answer ? "Correct!" : `Wrong! Correct: ${p.answer}`;
+  document.getElementById('fill-in-blank-answer').innerText = result;
+  if (selected === p.answer) updateScore('fillInBlank', 10);
+  fillIndex = (fillIndex + 1) % fillPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('fill-in-blank-answer').innerText = '';
+    loadFillPuzzle();
+  }, 2000);
+}
+loadFillPuzzle();
+
+// Code ordering puzzle logic
+const codeOrderPuzzles = [
+  {
+    question: "Order these lines to print numbers 1 to 3:",
+    lines: ["for i in range(1, 4):", "print(i)", "    print(i)"],
+    correct: ["for i in range(1, 4):", "    print(i)"]
+  },
+  {
+    question: "Order these lines to define a function that returns a square:",
+    lines: ["def square(num):", "return num * num", "    return num * num"],
+    correct: ["def square(num):", "    return num * num"]
+  }
+];
+let codeOrderIndex = 0;
+let selectedOrder = [];
+function loadCodeOrderPuzzle() {
+  const p = codeOrderPuzzles[codeOrderIndex];
+  document.getElementById('code-order-question').innerText = p.question;
+  const optDiv = document.getElementById('code-order-options');
+  optDiv.innerHTML = '';
+  p.lines.forEach(line => {
+    const btn = document.createElement('button');
+    btn.innerText = line;
+    btn.classList.add('draggable');
+    btn.draggable = true;
+    btn.ondragstart = (e) => e.dataTransfer.setData('text', line);
+    optDiv.appendChild(btn);
+  });
+  optDiv.ondragover = (e) => e.preventDefault();
+  optDiv.ondrop = (e) => {
+    e.preventDefault();
+    const line = e.dataTransfer.getData('text');
+    selectedOrder.push(line);
+    const btn = document.createElement('button');
+    btn.innerText = line;
+    optDiv.appendChild(btn);
+    if (selectedOrder.length === p.correct.length) {
+      checkCodeOrder();
+    }
+  };
+}
+function checkCodeOrder() {
+  const p = codeOrderPuzzles[codeOrderIndex];
+  const isCorrect = selectedOrder.join('|') === p.correct.join('|');
+  const result = isCorrect ? "Correct!" : `Wrong! Correct order:\n${p.correct.join('\n')}`;
+  document.getElementById('code-order-result').innerText = result;
+  if (isCorrect) updateScore('codeOrder', 15);
+  codeOrderIndex = (codeOrderIndex + 1) % codeOrderPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('code-order-result').innerText = '';
+    selectedOrder = [];
+    loadCodeOrderPuzzle();
+  }, 2000);
+}
+loadCodeOrderPuzzle();
+
+// Crossword puzzle logic
+const crosswordSolution = [
+  ['D', '', '', '', ''],
+  ['E', '', '', '', ''],
+  ['F', '', '', '', ''],
+  ['', 'D', 'I', 'C', 'T'],
+  ['', '', '', '', '']
+];
+function loadCrossword() {
+  const gridDiv = document.getElementById('crossword-grid');
+  gridDiv.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      const cell = document.createElement('div');
+      cell.classList.add('crossword-cell');
+      if (crosswordSolution[i][j]) {
+        const input = document.createElement('input');
+        input.maxLength = 1;
+        cell.appendChild(input);
+      }
+      gridDiv.appendChild(cell);
+    }
+  }
+}
+function checkCrossword() {
+  const gridDiv = document.getElementById('crossword-grid');
+  const inputs = gridDiv.querySelectorAll('input');
+  let correct = true;
+  let index = 0;
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      if (crosswordSolution[i][j]) {
+        const input = inputs[index];
+        if (input.value.toUpperCase() !== crosswordSolution[i][j]) {
+          correct = false;
+        }
+        index++;
+      }
+    }
+  }
+  const result = correct ? "Correct!" : "Wrong! Try again.";
+  document.getElementById('crossword-result').innerText = result;
+  if (correct) updateScore('crossword', 20);
+  setTimeout(() => {
+    document.getElementById('crossword-result').innerText = '';
+    if (correct) loadCrossword();
+  }, 2000);
+}
+loadCrossword();
+
+// Syntax error fixing logic
+const syntaxErrorPuzzles = [
+  {
+    code: "print('Hello'\n",
+    question: "Fix the syntax error in the code:",
+    options: ["Missing closing parenthesis )", "Missing quotes", "Incorrect indentation"],
+    correct: "Missing closing parenthesis )"
+  },
+  {
+    code: "if x = 5:\n    print('Five')",
+    question: "Fix the syntax error in the code:",
+    options: ["Use == for comparison", "Missing colon", "Incorrect print syntax"],
+    correct: "Use == for comparison"
+  }
+];
+let syntaxErrorIndex = 0;
+function loadSyntaxErrorPuzzle() {
+  const p = syntaxErrorPuzzles[syntaxErrorIndex];
+  document.getElementById('syntax-error-question').innerText = p.question;
+  document.getElementById('syntax-error-code').innerText = p.code;
+  const optDiv = document.getElementById('syntax-error-options');
+  optDiv.innerHTML = '';
+  p.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => checkSyntaxError(opt);
+    optDiv.appendChild(btn);
+  });
+}
+function checkSyntaxError(selected) {
+  const p = syntaxErrorPuzzles[syntaxErrorIndex];
+  const result = selected === p.correct ? "Correct!" : `Wrong! Correct: ${p.correct}`;
+  document.getElementById('syntax-error-result').innerText = result;
+  if (selected === p.correct) updateScore('syntaxError', 15);
+  syntaxErrorIndex = (syntaxErrorIndex + 1) % syntaxErrorPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('syntax-error-result').innerText = '';
+    loadSyntaxErrorPuzzle();
+  }, 2000);
+}
+loadSyntaxErrorPuzzle();
+
+// Logic error fixing logic
+const logicErrorPuzzles = [
+  {
+    code: "def is_even(num):\n    return num % 2 == 1",
+    question: "Fix the logic error (should return True for even numbers):",
+    options: ["Change == 1 to == 0", "Use / instead of %", "Return num instead"],
+    correct: "Change == 1 to == 0"
+  },
+  {
+    code: "total = 0\nfor i in range(5):\n    total += 1",
+    question: "Fix the logic error to sum numbers 0 to 4:",
+    options: ["Add i instead of 1", "Use range(1, 5)", "Change += to -="],
+    correct: "Add i instead of 1"
+  }
+];
+let logicErrorIndex = 0;
+function loadLogicErrorPuzzle() {
+  const p = logicErrorPuzzles[logicErrorIndex];
+  document.getElementById('logic-error-question').innerText = p.question;
+  document.getElementById('logic-error-code').innerText = p.code;
+  const optDiv = document.getElementById('logic-error-options');
+  optDiv.innerHTML = '';
+  p.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => checkLogicError(opt);
+    optDiv.appendChild(btn);
+  });
+}
+function checkLogicError(selected) {
+  const p = logicErrorPuzzles[logicErrorIndex];
+  const result = selected === p.correct ? "Correct!" : `Wrong! Correct: ${p.correct}`;
+  document.getElementById('logic-error-result').innerText = result;
+  if (selected === p.correct) updateScore('logicError', 15);
+  logicErrorIndex = (logicErrorIndex + 1) % logicErrorPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('logic-error-result').innerText = '';
+    loadLogicErrorPuzzle();
+  }, 2000);
+}
+loadLogicErrorPuzzle();
+
+// Output guessing game logic
+const outputGuessPuzzles = [
+  {
+    code: "x = [1, 2, 3]\nprint(x[1])",
+    question: "What is the output of this code?",
+    options: ["1", "2", "3", "[1, 2, 3]"],
+    correct: "2"
+  },
+  {
+    code: "for i in range(2):\n    print(i)",
+    question: "What is the output of this code?",
+    options: ["0\n1", "1\n2", "0\n1\n2", "None"],
+    correct: "0\n1"
+  }
+];
+let outputGuessIndex = 0;
+function loadOutputGuessPuzzle() {
+  const p = outputGuessPuzzles[outputGuessIndex];
+  document.getElementById('output-guess-question').innerText = p.question;
+  document.getElementById('output-guess-code').innerText = p.code;
+  const optDiv = document.getElementById('output-guess-options');
+  optDiv.innerHTML = '';
+  p.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.innerText = opt;
+    btn.onclick = () => checkOutputGuess(opt);
+    optDiv.appendChild(btn);
+  });
+}
+function checkOutputGuess(selected) {
+  const p = outputGuessPuzzles[outputGuessIndex];
+  const result = selected === p.correct ? "Correct!" : `Wrong! Correct: ${p.correct}`;
+  document.getElementById('output-guess-result').innerText = result;
+  if (selected === p.correct) updateScore('outputGuess', 10);
+  outputGuessIndex = (outputGuessIndex + 1) % outputGuessPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('output-guess-result').innerText = '';
+    loadOutputGuessPuzzle();
+  }, 2000);
+}
+loadOutputGuessPuzzle();
+
+// Memory match game logic
+const memoryMatchPairs = [
+  { term: "def", definition: "Keyword for function" },
+  { term: "list", definition: "Mutable sequence" },
+  { term: "dict", definition: "Key-value pairs" },
+  { term: "try", definition: "Exception handling" }
+];
+let memoryMatchSelected = [];
+let memoryMatchFlipped = [];
+function loadMemoryMatch() {
+  const gridDiv = document.getElementById('memory-match-grid');
+  gridDiv.innerHTML = '';
+  const cards = [...memoryMatchPairs.map(p => p.term), ...memoryMatchPairs.map(p => p.definition)];
+  cards.sort(() => Math.random() - 0.5);
+  cards.forEach(card => {
+    const btn = document.createElement('button');
+    btn.innerText = '?';
+    btn.dataset.value = card;
+    btn.onclick = () => flipCard(btn, card);
+    gridDiv.appendChild(btn);
+  });
+  memoryMatchSelected = [];
+  memoryMatchFlipped = [];
+}
+function flipCard(btn, value) {
+  if (memoryMatchSelected.length < 2 && !memoryMatchFlipped.includes(btn)) {
+    btn.innerText = value;
+    memoryMatchSelected.push({ btn, value });
+    memoryMatchFlipped.push(btn);
+    if (memoryMatchSelected.length === 2) {
+      checkMemoryMatch();
+    }
+  }
+}
+function checkMemoryMatch() {
+  const [card1, card2] = memoryMatchSelected;
+  let isMatch = false;
+  for (let pair of memoryMatchPairs) {
+    if ((card1.value === pair.term && card2.value === pair.definition) ||
+        (card2.value === pair.term && card1.value === pair.definition)) {
+      isMatch = true;
+      break;
+    }
+  }
+  const result = isMatch ? "Match!" : "No match!";
+  document.getElementById('memory-match-result').innerText = result;
+  if (isMatch) {
+    updateScore('memoryMatch', 20);
+  } else {
+    setTimeout(() => {
+      card1.btn.innerText = '?';
+      card2.btn.innerText = '?';
+      memoryMatchFlipped = memoryMatchFlipped.filter(btn => btn !== card1.btn && btn !== card2.btn);
+    }, 1000);
+  }
+  memoryMatchSelected = [];
+  setTimeout(() => {
+    document.getElementById('memory-match-result').innerText = '';
+    if (memoryMatchFlipped.length === memoryMatchPairs.length * 2) {
+      loadMemoryMatch();
+    }
+  }, 2000);
+}
+loadMemoryMatch();
+
+// Code completion logic
+const codeCompletionPuzzles = [
+  {
+    code: "def greet(name):\n    return ___",
+    question: "Complete the code to return a greeting:",
+    answer: "f'Hello, {name}!'"
+  },
+  {
+    code: "numbers = [1, 2, 3]\nsquares = [___ for x in numbers]",
+    question: "Complete the list comprehension to square numbers:",
+    answer: "x**2"
+  }
+];
+let codeCompletionIndex = 0;
+function loadCodeCompletionPuzzle() {
+  const p = codeCompletionPuzzles[codeCompletionIndex];
+  document.getElementById('code-completion-question').innerText = p.question;
+  document.getElementById('code-completion-code').innerText = p.code;
+  document.getElementById('code-completion-input').value = '';
+}
+function checkCodeCompletion() {
+  const p = codeCompletionPuzzles[codeCompletionIndex];
+  const input = document.getElementById('code-completion-input').value.trim();
+  const result = input === p.answer ? "Correct!" : `Wrong! Correct: ${p.answer}`;
+  document.getElementById('code-completion-result').innerText = result;
+  if (input === p.answer) updateScore('codeCompletion', 15);
+  codeCompletionIndex = (codeCompletionIndex + 1) % codeCompletionPuzzles.length;
+  setTimeout(() => {
+    document.getElementById('code-completion-result').innerText = '';
+    loadCodeCompletionPuzzle();
+  }, 2000);
+}
+loadCodeCompletionPuzzle();
+
+// Chatbot logic with greetings and video responses
+const responses = {
+  greeting: {
+    text: "Hello! I'm PyBuddy, your Python learning assistant. How can I help you today?",
+    video: ""
+  },
+  variable: {
+    text: "Variables are used to store data, like numbers or text. In Python, you create a variable by assigning a value to it with the = operator. Example: x = 5",
+    video: "https://example.com/ai-video/variables"
+  },
+  loop: {
+    text: "Loops let you repeat actions. Python has 'for' loops (for iterating over sequences) and 'while' loops (for repeating while a condition is true). Example: for i in range(5): print(i)",
+    video: "https://example.com/ai-video/loops"
+  },
+  function: {
+    text: "Functions help organize reusable code, defined using 'def'. They can take parameters and return values. Example: def greet(name): return f'Hello {name}'",
+    video: "https://example.com/ai-video/functions"
+  },
+  if: {
+    text: "If statements let you run code only when a condition is true. You can add 'elif' for additional conditions and 'else' for a default case. Example: if x > 0: print('Positive')",
+    video: "https://example.com/ai-video/ifelse"
+  },
+  list: {
+    text: "Lists are ordered, mutable collections of items. Created with square brackets []. Example: fruits = ['apple', 'banana']",
+    video: "https://example.com/ai-video/lists"
+  },
+  dictionary: {
+    text: "Dictionaries store key-value pairs in curly braces {}. Example: person = {'name': 'John', 'age': 30}",
+    video: "https://example.com/ai-video/dictionaries"
+  },
+  class: {
+    text: "Classes are blueprints for creating objects with attributes and methods. Example: class Dog: def __init__(self, name): self.name = name",
+    video: "https://example.com/ai-video/classes"
+  }
+};
+
+const greetings = ["hi", "hello", "hey", "greetings", "howdy"];
+
+function handleKeyPress(event) {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+}
+
+function sendMessage() {
+  const input = document.getElementById('user-input');
+  const history = document.getElementById('chat-history');
+  const text = input.value.trim().toLowerCase();
+  if (!text) return;
+  history.innerHTML += `<p>You: ${input.value}</p>`;
+  let isGreeting = greetings.some(greet => text.includes(greet));
+  if (isGreeting) {
+    const response = responses.greeting;
+    history.innerHTML += `<p>PyBuddy: ${response.text}</p>`;
+    input.value = '';
+    history.scrollTop = history.scrollHeight;
+    return;
+  }
+  let reply = responses.greeting;
+  let video = "";
+  for (const key in responses) {
+    if (text.includes(key)) {
+      reply = responses[key].text;
+      video = responses[key].video;
+      break;
+    }
+  }
+  if (reply === responses.greeting) {
+    reply = "I'm not sure about that. Try asking about variables, loops, functions, if-statements, lists, dictionaries, or classes.";
+  }
+  history.innerHTML += `<p>PyBuddy: ${reply}</p>`;
+  if (video) {
+    history.innerHTML += `<iframe src="${video}" allowfullscreen></iframe>`;
+  }
+  input.value = '';
+  history.scrollTop = history.scrollHeight;
+}
+
+// Initialize score
+updateScoreBoard();
+</script>
+</body>
+</html>
